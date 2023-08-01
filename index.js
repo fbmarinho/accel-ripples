@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     };
 
     move(){
-      this.z = -acl.z
+      this.z = acl.z*2
     }
 
     draw(ctx){
