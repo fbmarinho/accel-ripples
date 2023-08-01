@@ -6,9 +6,11 @@ document.addEventListener("DOMContentLoaded",()=>{
   const ctx = canvas.getContext("2d");
 
 
-  const acl = new Accelerometer({ frequency: 30 });
+  const acl = new Accelerometer({ frequency: 10 });
   acl.addEventListener("reading", () => {
-    console.log(acl.x,acl.y,acl.z);
+    ripples.forEach((r)=>{
+      r.setForce(acl.z/10);
+    });
   });
 
   acl.start();
@@ -18,22 +20,26 @@ document.addEventListener("DOMContentLoaded",()=>{
       this.x = x;
       this.y = y;
       this.r = r;
-      this.z = 0;
+      this.vz = 0;
+      this.az = 0;
     };
 
-    move(){
-      this.z = acl.z*2
+    setForce(force){
+      this.az = force;
+    }
+
+    update(){
+      this.az *= 0.98;
+      this.vz += this.az;
     }
 
     draw(ctx){
-      ctx.strokeStyle = "white";
-      ctx.fillStyle = "blue";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(0, 0, 255, 50)"; ;
+      ctx.lineWidth = 20;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r+this.z, 0, 2 * Math.PI);
+      ctx.arc(this.x, this.y, this.r+this.vz, 0, 2 * Math.PI);
       ctx.closePath();
       ctx.stroke();
-      ctx.fill();
     }
   }
   
@@ -49,7 +55,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     ctx.clearRect(0,0,canvas.width, canvas.height);
     
     ripples.forEach((r)=>{
-      r.move();
+      r.update();
       r.draw(ctx);
     });
     
